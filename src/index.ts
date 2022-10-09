@@ -37,7 +37,8 @@ async function StartApp() {
   const exporter = HBExporter(exporterDeps);
 
   try {
-    exporter.StartExport(myUser, mockOpenFile());
+    const status = await exporter.StartExport(myUser, mockOpenFile());
+    //exporter.CancelExport(status.id); Cancel export solution
   } catch (e) {
     console.log(e);
   }
