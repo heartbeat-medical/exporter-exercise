@@ -8,6 +8,7 @@ import { Logger } from "./logger";
 interface Exporter {
   StartExport: (user: User, data: Stream) => Promise<ExportStatus>;
   GetExportStatus: (id: string) => Promise<ExportStatus>;
+  CancelExport: (id: string) => void;
 }
 
 type ExportStatus = {
@@ -23,10 +24,17 @@ export type HBExporterDependencies = {
   logger: Logger;
 };
 
+export type Writables = Record<string, Writable>;
+
+const writables: Writables = {}
+
 export const HBExporter = (deps: HBExporterDependencies): Exporter => {
+  const set = util.promisify(deps.cache.SET).bind(deps.cache);
+  const get = util.promisify(deps.cache.GET).bind(deps.cache);
   return {
     StartExport: async (user, data) => {
       deps.logger("starting export")
+      const exportId = deps.UUIDGen.NewUUID();
       try {
         const allowed = await deps.permissionsService.CheckPermissions(
           user,
@@ -35,22 +43,22 @@ export const HBExporter = (deps: HBExporterDependencies): Exporter => {
         if (!allowed) {
           throw new Error("incorrect permission");
         }
-        const exportId = deps.UUIDGen.NewUUID();
         const newStatus = {
           status: "CREATED",
           id: exportId,
         };
-        const set = util.promisify(deps.cache.SET).bind(deps.cache);
         await set(exportId, JSON.stringify(newStatus));
-        data.pipe(newCacheWriter(exportId, deps.cache));
+
+        const writable = data.pipe(newCacheWriter(exportId, deps.cache));
+        writables[exportId] = writable;
         return newStatus;
       } catch (e) {
         console.log("error");
+        delete writables[exportId];
         throw e;
       }
     },
     GetExportStatus: async (exportId) => {
-      const get = util.promisify(deps.cache.GET).bind(deps.cache);
       const strStatus = await get(exportId);
       if (!strStatus) {
         throw new Error(`no export found for id: ${exportId}`);
@@ -58,6 +66,15 @@ export const HBExporter = (deps: HBExporterDependencies): Exporter => {
       const status: ExportStatus = JSON.parse(strStatus);
       return status;
     },
+    CancelExport: (exportId) => {
+      writables[exportId].end();
+
+      writables[exportId].on('close', async () => {
+        await set(exportId, JSON.stringify({ status: "CANCELLED", id: exportId }));
+        delete writables[exportId];
+        console.log(`Cancelled Export ${exportId}`);
+      })
+    }
   };
 };
 
@@ -75,6 +92,7 @@ function newCacheWriter(exportId: string, cache: RedisClient) {
       await set(exportId, JSON.stringify({ status: "COMPLETE", id: exportId }));
       await expire(exportId, 60 * 60);
       await expire(exportId + "-data", 60 * 60);
+      delete writables[exportId];
       callback();
     },
   });

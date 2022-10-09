@@ -88,6 +88,47 @@ What would you improve? We know this feature isn't great. What would you change?
 7. You can either submit more code or we can discuss in the next interview 🤘
 8. Any questions, reach out to us!
 
+# Description <a name = "description"></a>
+## When the app starts(index.ts) <a name = "description"></a>
+- It initializies dependancies consisting of Redis client(mock), UUID generator, user and permission.
+- Then initializies exporter module with the dependancies.
+- Starts export process by calling the start export function ``` await exporter.StartExport(myUser, mockOpenFile()) ``` passing the user object and the read stream.
+- Check status of the exports every 500 milliseconds
+  
+
+## The exporter module(exporter.ts) <a name = "exporter"></a>
+
+It has two main functions; StartExport and GetExportStatus
+
+## StartExport <a name = "start-export"></a>
+- Validates user permission before proceeding
+- Generates an export ID(exportId)
+- Creates a status object ```const newStatus = {
+          status: "CREATED",
+          id: exportId,
+        }; ```
+- Creates a cache entry with the exportId as the key and add the JSON of the newStatus as value.
+- pipes the file read stream(passed as an argument) to the write stream(newCacheWriter) that updates the status of the exports and the data chunks.  
+
+## newCacheWriter <a name = "new-cache-writer"></a>
+- Appends cache entry for each chunk of data.
+- updates the status to ```PENDING```
+
+When the stream data ends; 
+- Modifies the status to ```COMPLETED```
+- Set the expiration of the key(exportId) and the data to 60 minutes.
+
+## GetExportStatus <a name = "get-export-status"></a>
+- Gets export status from cache using the ```exportId```
+- And returns status object if found.
+
+# Potential Improvements <a name = "improvements"></a>
+
+- The interfaces and types can be seperated into their own files.
+- Functions like ```mockOpenFile``` and  ```sleep``` can be moved into a utilis file.
+- ```newCacheWriter``` function can be extracted into it own module and imported in to ```exporter.ts```.
+- Make the status an enum.
+- Overall refactoring of the code to follow clean code standard.
 ## Start the application
 
 Run the example with:
