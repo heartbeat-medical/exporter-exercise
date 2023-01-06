@@ -6,10 +6,13 @@ export type Logger = {
   ): void;
   tag: (...tags: Stringable[]) => Logger;
 };
+
 export type Stringable = string | ToString;
+
 export type ToString = {
   toString: () => string;
 };
+
 function fieldsToString(fields?:  { [key: string]: Stringable }) {
   if (!fields) {
     return ""
@@ -17,7 +20,7 @@ function fieldsToString(fields?:  { [key: string]: Stringable }) {
   let str = ""
   for (const k in fields) {
     str = str + k + ":" + fields[k].toString() + ", "
-  } 
+  }
   return str
 }
 
@@ -31,6 +34,7 @@ export const NewMockLogger = (...tags: Stringable[]) : Logger => {
     const allTags = [...oldTags, ...tags]
     console.log(`tags: ${allTags.join("|")}, message: ${message}, fields: ${fieldsToString(fields)}`)
   }
+
   log.tag = (...tags: Stringable[]) => {
     oldTags.push(...tags)
     return log

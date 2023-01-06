@@ -24,6 +24,27 @@ of this exercise.
 Complete this README with a description of how the exporter works. You may
 also add diagrams/code snippets, whatever you think is required ⭐️
 
+#### Description
+The Exporter acts as Job Queue Manager. In a nutshell, it creates jobs and 
+tracks/manages their statuses in a cache (redis). It exposes 3 main functions
+
+**- `StartExport`:** Simply put, this function,
+- Collects the User and the Job [Readable] Stream
+- Tries to authorize the user's action based a configured permission requirement
+- Creates a default Job object (including an id and a default status)
+- Writes the job object to a cache with the "unique" identifier
+- Pipes the Job Readable Stream to a Writable Stream that handles the following, both of which updates the job in cache
+    - Chunk additions: Appends chunk to `<job-id>-data`
+    - Job Completion: Updates job status 
+
+**- `GetExportStatus`:** This retrieves a provided job object by their id from
+cache and returns the status, for when it exists/hasn't expired and throws an error for when it is not found.
+
+**- `CancelExport (My Addition)`:** The function, cancels any specific pending job,
+- Closes the Streams
+- Updates the Status
+
+
 **Tips**
 
 1.  Read through the various files.

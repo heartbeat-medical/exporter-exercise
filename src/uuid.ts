@@ -2,7 +2,7 @@ export interface UUID {
   NewUUID: () => string;
 }
 
-export const MockUUIDGen = {
+export const MockUUIDGen: UUID = {
   NewUUID: () => {
     return "AAAA";
   },
