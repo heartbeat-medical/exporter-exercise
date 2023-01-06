@@ -7,7 +7,7 @@ import { UUID } from "./uuid";
 import { Logger } from "./logger";
 
 /**
- * Used to temporarily keep  track of ongoing jobs incase of a cancellation or error
+ * Used to temporarily keep  track of ongoing jobs in case of a cancellation or error
  */
 const ongoingExportJobs: Map<string, [Writable, Readable]> = new Map<string, [Writable, Readable]>()
 

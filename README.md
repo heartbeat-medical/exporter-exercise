@@ -1,21 +1,7 @@
 # Heartbeat engineering challenge
 
-> 🚨 Please create a private fork of this repository and make all PRs into your own repository
-
-Thank you for taking part in this and we are excited to see your work!
-
-This repository contains a slimmed down version of an _exporter_ and associated
-constructs for mocking functionality. There are three
-tasks to complete.
-
-The following files are simple mocks and need not be edited for the purpose
-of this exercise.
-
-```
-1. src/logger.ts
-2. src/permissions.ts
-3. src/uuid.ts
-```
+> 🚨 Please create a private fork of this repository and make all PRs into your own repository.
+> **Could not make repo private, because main repo is public.**
 
 ## Tasks
 
@@ -33,12 +19,14 @@ tracks/manages their statuses in a cache (redis). It exposes 3 main functions
 - Tries to authorize the user's action based a configured permission requirement
 - Creates a default Job object (including an id and a default status)
 - Writes the job object to a cache with the "unique" identifier
-- Pipes the Job Readable Stream to a Writable Stream that handles the following, both of which updates the job in cache
+- Pipes the Job Readable Stream to a Writable Stream that handles the following, 
+both of which updates the job in cache
     - Chunk additions: Appends chunk to `<job-id>-data`
     - Job Completion: Updates job status 
 
 **- `GetExportStatus`:** This retrieves a provided job object by their id from
-cache and returns the status, for when it exists/hasn't expired and throws an error for when it is not foun d.
+cache and returns the status, for when it exists/hasn't expired and throws an error
+for when it is not found.
   
 **- `CancelExport (My Addition)`:** The function, cancels any specific pending job,
 - Closes the Streams
@@ -57,22 +45,29 @@ this functionality.
 
 What would you improve? We know this feature isn't great. What would you change?
 
-**Tips**
+#### Improvements
+- The Redis client usage is redefined in multiple places and instances. It is recommended to wrap
+the RedisClient in an object that exposes the asynchronous versions of the redis functions
+- Re-useable blocks are best extracted to functions. Eg
+```ts
+await set(exportId + "-data", "...");
+// Can be changed to
 
-1. We are looking for ideas such as patterns, principles and performance.
-2. You don't need to implement any improvements, but feel free to use code
-   examples where you feel it would be helpful.
-
-## How to submit
-
-1. Create a private fork of this repository
-2. Create a new branch in your fork
-3. Commit on that branch
-4. When you are ready to submit, create a PR back to your fork
-5. Add the user @heartbeat-med (https://github.com/heartbeat-med)
-6. We will comment on the PR
-7. You can either submit more code or we can discuss in the next interview 🤘
-8. Any questions, reach out to us!
+function getExportDataKey(id: string) {
+	return `${id}-data`;
+}
+```
+- It is not recommended to throw in `try` blocks as seen in `StartExport`.
+```ts
+try {
+  ...
+  throw new Error(...)
+}
+```
+- `StartExport` should be fail-proof and should cancel any created job if an error happens 
+in stream creation and piping
+- Judging by filename `permission.ts`, `User` should not exported in it. It's best exported in a
+generic file or user (contextual) file
 
 ## Start the application
 
@@ -86,4 +81,10 @@ Format code:
 
 ```shell
 yarn format
+```
+
+Test code:
+
+```shell
+yarn test
 ```

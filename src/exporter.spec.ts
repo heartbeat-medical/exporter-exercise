@@ -8,7 +8,7 @@ import {createReadStream} from "fs";
 function mockOpenFile() {
 	return createReadStream("myexport.txt", {
 		encoding: "utf8",
-		autoClose: true,
+		autoClose: false,
 	});
 }
 
@@ -43,6 +43,5 @@ describe('Exporter', function () {
 			expect(streamJob.destroyed).toBe(true)
 			expect(jobUpdate.status).toEqual("CANCELED")
 		});
-
 	});
 });

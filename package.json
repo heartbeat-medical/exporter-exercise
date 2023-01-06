@@ -4,7 +4,8 @@
   "description": "A coding challenge for the Heartbeat exporter",
   "scripts": {
     "format": "prettier --write .",
-    "start": "babel-node -x \".ts\" src/index.ts"
+    "start": "babel-node -x \".ts\" src/index.ts",
+    "test": "jest"
   },
   "author": {
     "name": "Christian Mellor",
