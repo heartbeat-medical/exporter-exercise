@@ -37,7 +37,7 @@ async function StartApp() {
   const exporter = HBExporter(exporterDeps);
 
   try {
-    exporter.StartExport(myUser, mockOpenFile());
+    await exporter.StartExport(myUser, mockOpenFile());
   } catch (e) {
     console.log(e);
   }
@@ -50,4 +50,4 @@ async function StartApp() {
 }
 
 // Starting application...
-StartApp();
+StartApp().then(r => "App Started");

@@ -38,55 +38,20 @@ tracks/manages their statuses in a cache (redis). It exposes 3 main functions
     - Job Completion: Updates job status 
 
 **- `GetExportStatus`:** This retrieves a provided job object by their id from
-cache and returns the status, for when it exists/hasn't expired and throws an error for when it is not found.
-
+cache and returns the status, for when it exists/hasn't expired and throws an error for when it is not foun d.
+  
 **- `CancelExport (My Addition)`:** The function, cancels any specific pending job,
 - Closes the Streams
-- Updates the Status
+- Updates the Job Status
 
-
-**Tips**
-
-1.  Read through the various files.
-2.  Map out the high level system
-    architecture and important functionality.
-3.  (optional) Add comments to the `src/exporter.ts` file.
-
-**What we are looking for**
-
-1. Clear explanations of what individual elements are.
-2. Some parts may be confusing, that's ok. We are looking for a
-   thoughtful consideration of the different elements.
-3. Your approach to documentation.
 
 ### Task 2a 🛠
-
-**Please choose either 2a or 2b!**
 
 We need new functionality adding. In addition to starting and fetching the
 status of exports. **We would also like to cancel currently running exports**. Please implement
 this functionality.
 
-**Tips**
-
-1. _We are looking for a minimum working example_, try focus on getting to something working.
-   We can talk through your design and architecture decisions during the next interview.
-2. The cancel existing import functionality should ideally **stop** an existing import. So no
-   further bytes are piped from data source to the cache.
-4. Bonus points for helpful test coverage on new code.
-
-### Task 2b 🧪
-
-**Please choose either 2a or 2b!**
-
-The engineer who implemented this functionality forgot to add tests. We would like to cover
-this feature with tests. Please add suitable tests for the exporter.
-
-**Tips**
-
-1. We are looking for how you approach testing code - be prepared to answer questions on why
-   certain tests have been added!
-2. Test names should be descriptive and help us understand why you chose to write that test.
+**Implemented**
 
 ### Task 3 📈
 
