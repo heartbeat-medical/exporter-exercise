@@ -101,3 +101,20 @@ Format code:
 ```shell
 yarn format
 ```
+
+
+
+# Description
+
+This application is exporting the data coming from the myexport.txt file.
+
+### index.ts
+The `index.ts` file contains and runs the `startApp()` function which initiates an exporter with its needed dependencies and starts exporting the data of the myexport.txt file.
+It then logs the export status every 0.5 seconds while the export runs forever.
+
+### exporter.ts
+The `exporter.ts` file defines the HBExporter which contains the script to start the export and the script to get the export's status.
+
+To start the export it first checks that the given user has the given persmissions, generates an export ID using the given UUID generator, and writes the data read from the given stream to the cache using the pipe method.
+
+To get the Export status finds the export with the given id inside the cache and returns its parsed status.
