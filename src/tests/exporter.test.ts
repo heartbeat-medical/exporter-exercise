@@ -86,9 +86,6 @@ describe("HBExporter", () => {
 
     // Verify writable's pipe method was called
     expect(mockData.pipe).toHaveBeenCalledWith(expect.any(Writable));
-
-    // Verify mockWritable's write method
-    mockWritable.write('mockChunk');
   });
 
   it('should get export status from cache', async () => {
